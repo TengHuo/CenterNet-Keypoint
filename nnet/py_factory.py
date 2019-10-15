@@ -34,7 +34,7 @@ class DummyModule(nn.Module):
 class NetworkFactory(object):
     def __init__(self, db):
         super(NetworkFactory, self).__init__()
-
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         module_file = "models.{}".format(system_configs.snapshot_name)
         print("module_file: {}".format(module_file))
         nnet_module = importlib.import_module(module_file)
@@ -42,7 +42,7 @@ class NetworkFactory(object):
         self.model   = DummyModule(nnet_module.model(db))
         self.loss    = nnet_module.loss
         self.network = Network(self.model, self.loss)
-        self.network = DataParallel(self.network, chunk_sizes=system_configs.chunk_sizes).cuda()
+        # self.network = DataParallel(self.network, chunk_sizes=system_configs.chunk_sizes).cuda()
 
         total_params = 0
         for params in self.model.parameters():
@@ -75,8 +75,8 @@ class NetworkFactory(object):
         self.network.eval()
 
     def train(self, xs, ys, **kwargs):
-        xs = [x for x in xs]
-        ys = [y for y in ys]
+        xs = [x.to(self.device) for x in xs]
+        ys = [y.to(self.device) for y in ys]
 
         self.optimizer.zero_grad()
         loss_kp = self.network(xs, ys)

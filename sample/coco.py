@@ -190,6 +190,10 @@ def kp_detection(db, k_ind, data_aug, debug):
     ct_tags     = torch.from_numpy(ct_tags)
     tag_masks   = torch.from_numpy(tag_masks)
 
+    # print("~~~~~~~~~~~~~~~test~~~~~~~~~~~~~~")
+    # print(images.size())
+    # print("~~~~~~~~~~~~~~~test~~~~~~~~~~~~~~")
+
     return {
         "xs": [images, tl_tags, br_tags, ct_tags],
         "ys": [tl_heatmaps, br_heatmaps, ct_heatmaps, tag_masks, tl_regrs, br_regrs, ct_regrs]
